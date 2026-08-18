@@ -1,0 +1,258 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f172a,
+            #1e293b
+        );
+
+    color: white;
+
+    min-height: 100vh;
+}
+
+
+.container {
+
+    width: 90%;
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    padding: 30px 0;
+}
+
+
+/* HEADER */
+
+header {
+
+    text-align: center;
+
+    margin-bottom: 30px;
+}
+
+header h1 {
+
+    font-size: 32px;
+
+    margin-bottom: 10px;
+}
+
+header p {
+
+    color: #cbd5e1;
+
+    margin-bottom: 15px;
+}
+
+
+#connection {
+
+    font-weight: bold;
+}
+
+
+/* STATUS */
+
+.status-card {
+
+    background: #1e293b;
+
+    border-radius: 15px;
+
+    padding: 25px;
+
+    text-align: center;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(0,0,0,0.3);
+}
+
+
+#status {
+
+    font-size: 32px;
+
+    font-weight: bold;
+
+    margin: 15px;
+}
+
+
+/* STATUS COLORS */
+
+.normal {
+
+    color: #22c55e;
+}
+
+.moderate {
+
+    color: #facc15;
+}
+
+.poor {
+
+    color: #ef4444;
+}
+
+
+/* SENSOR CARDS */
+
+.cards {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            1fr
+        );
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+
+.card {
+
+    background: #1e293b;
+
+    border-radius: 15px;
+
+    padding: 25px;
+
+    text-align: center;
+
+    box-shadow:
+        0 10px 30px
+        rgba(0,0,0,0.3);
+
+    transition: 0.3s;
+}
+
+
+.card:hover {
+
+    transform:
+        translateY(-5px);
+}
+
+
+.card h3 {
+
+    margin-bottom: 15px;
+}
+
+
+.value {
+
+    font-size: 40px;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+
+.card span {
+
+    color: #94a3b8;
+}
+
+
+/* SYSTEM */
+
+.system {
+
+    background: #1e293b;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    margin-bottom: 25px;
+}
+
+
+.system h2 {
+
+    margin-bottom: 20px;
+}
+
+
+.info {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            1fr
+        );
+
+    gap: 12px;
+}
+
+
+.info p {
+
+    background: #0f172a;
+
+    padding: 15px;
+
+    border-radius: 8px;
+
+    color: #cbd5e1;
+}
+
+
+/* FOOTER */
+
+footer {
+
+    text-align: center;
+
+    color: #94a3b8;
+
+    padding: 20px;
+}
+
+
+/* MOBILE */
+
+@media(max-width: 700px) {
+
+    .cards {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .info {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    header h1 {
+
+        font-size: 24px;
+    }
+
+}

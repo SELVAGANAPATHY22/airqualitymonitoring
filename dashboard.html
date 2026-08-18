@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ambient Air Quality Monitoring System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .header {
+            background: #0f172a;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #cbd5e1;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .connection {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .online {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .offline {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        .card h3 {
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .unit {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .status-card {
+            margin-top: 25px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .status {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            background: #e2e8f0;
+        }
+
+        .normal {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .time {
+            margin-top: 15px;
+            color: #64748b;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #64748b;
+        }
+
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>🌍 Ambient Air Quality Monitoring System</h1>
+        <p>ESP32 • MQ-135 • DHT11 • IoT Environmental Monitoring</p>
+    </div>
+
+
+    <div class="container">
+
+        <!-- CONNECTION STATUS -->
+        <div class="connection">
+            ESP32 Connection:
+            <span id="connection" class="offline">
+                Checking...
+            </span>
+        </div>
+
+
+        <!-- SENSOR CARDS -->
+        <div class="cards">
+
+            <!-- MQ135 -->
+            <div class="card">
+                <div class="icon">🌫️</div>
+                <h3>MQ-135</h3>
+
+                <div class="value" id="mq135">
+                    0
+                </div>
+
+                <div class="unit">
+                    Raw Sensor Value
+                </div>
+            </div>
+
+
+            <!-- TEMPERATURE -->
+            <div class="card">
+                <div class="icon">🌡️</div>
+                <h3>Temperature</h3>
+
+                <div class="value" id="temperature">
+                    0
+                </div>
+
+                <div class="unit">
+                    °C
+                </div>
+            </div>
+
+
+            <!-- HUMIDITY -->
+            <div class="card">
+                <div class="icon">💧</div>
+                <h3>Humidity</h3>
+
+                <div class="value" id="humidity">
+                    0
+                </div>
+
+                <div class="unit">
+                    %
+                </div>
+            </div>
+
+
+            <!-- TIME -->
+            <div class="card">
+                <div class="icon">🕐</div>
+                <h3>Last Update</h3>
+
+                <div class="value" id="time">
+                    --:--:--
+                </div>
+
+                <div class="unit">
+                    Local Server Time
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- AIR QUALITY STATUS -->
+        <div class="status-card">
+
+            <h2>Air Quality Status</h2>
+
+            <div id="status" class="status">
+                WAITING
+            </div>
+
+            <div class="time">
+                Real-time sensor monitoring
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p>
+            Ambient Air Quality Monitoring System
+        </p>
+
+        <p>
+            ESP32 IoT Environmental Monitoring
+        </p>
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+    <script>
+
+        async function getSensorData() {
+
+            try {
+
+                const response = await fetch("/latest");
+
+                if (!response.ok) {
+                    throw new Error("Server error");
+                }
+
+                const data = await response.json();
+
+
+                // Update MQ-135
+                document.getElementById("mq135").innerText =
+                    data.mq135;
+
+
+                // Update temperature
+                document.getElementById("temperature").innerText =
+                    data.temperature;
+
+
+                // Update humidity
+                document.getElementById("humidity").innerText =
+                    data.humidity;
+
+
+                // Update time
+                document.getElementById("time").innerText =
+                    data.time;
+
+
+                // Update status
+                const statusElement =
+                    document.getElementById("status");
+
+                statusElement.innerText =
+                    data.status;
+
+
+                // Remove old status classes
+                statusElement.classList.remove(
+                    "normal",
+                    "warning",
+                    "danger"
+                );
+
+
+                // Change status color
+                if (
+                    data.status === "NORMAL" ||
+                    data.status === "GOOD"
+                ) {
+
+                    statusElement.classList.add("normal");
+
+                }
+
+                else if (
+                    data.status === "WARNING" ||
+                    data.status === "MODERATE"
+                ) {
+
+                    statusElement.classList.add("warning");
+
+                }
+
+                else if (
+                    data.status === "DANGER" ||
+                    data.status === "POOR"
+                ) {
+
+                    statusElement.classList.add("danger");
+
+                }
+
+
+                // ESP32/server connection
+                document.getElementById("connection").innerText =
+                    "ONLINE";
+
+                document.getElementById("connection").className =
+                    "online";
+
+            }
+
+
+            catch (error) {
+
+                console.log("Connection error:", error);
+
+                document.getElementById("connection").innerText =
+                    "OFFLINE";
+
+                document.getElementById("connection").className =
+                    "offline";
+            }
+
+        }
+
+
+        // Get data immediately
+        getSensorData();
+
+
+        // Update every 2 seconds
+        setInterval(getSensorData, 2000);
+
+    </script>
+
+</body>
+</html>
